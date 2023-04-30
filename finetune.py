@@ -20,8 +20,9 @@ from peft import (
     get_peft_model_state_dict,
     prepare_model_for_int8_training,
     set_peft_model_state_dict,
+    TaskType
 )
-from transformers import LlamaForCausalLM, LlamaTokenizer
+from transformers import LlamaForCausalLM, LlamaTokenizer, AutoModelForSeq2SeqLM
 
 from utils.prompter import Prompter
 
