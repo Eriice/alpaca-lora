@@ -16,6 +16,7 @@ import bitsandbytes as bnb
 from peft import (
     LoraConfig,
     get_peft_model,
+    PertModel,
     get_peft_model_state_dict,
     prepare_model_for_int8_training,
     set_peft_model_state_dict,
@@ -173,15 +174,22 @@ def train(
 
     model = prepare_model_for_int8_training(model)
 
-    config = LoraConfig(
-        r=lora_r,
-        lora_alpha=lora_alpha,
-        target_modules=lora_target_modules,
-        lora_dropout=lora_dropout,
-        bias="none",
-        task_type="CAUSAL_LM",
+    低秩权重 = "tloen/alpaca-lora-7b"
+    model = PertModel.from_pretrained(
+        model,
+        低秩权重,
+        torch_dtype=torch.float16
     )
-    model = get_peft_model(model, config)
+
+    # config = LoraConfig(
+    #     r=lora_r,
+    #     lora_alpha=lora_alpha,
+    #     target_modules=lora_target_modules,
+    #     lora_dropout=lora_dropout,
+    #     bias="none",
+    #     task_type="CAUSAL_LM",
+    # )
+    # model = get_peft_model(model, config)
 
     if data_path.endswith(".json") or data_path.endswith(".jsonl"):
         data = load_dataset("json", data_files=data_path)
