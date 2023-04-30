@@ -20,9 +20,8 @@ from peft import (
     get_peft_model_state_dict,
     prepare_model_for_int8_training,
     set_peft_model_state_dict,
-    TaskType
 )
-from transformers import LlamaForCausalLM, LlamaTokenizer, AutoModelForSeq2SeqLM
+from transformers import LlamaForCausalLM, LlamaTokenizer
 
 from utils.prompter import Prompter
 
@@ -174,41 +173,25 @@ def train(
         return tokenized_full_prompt
 
     model = prepare_model_for_int8_training(model)
-    
-    低秩权重 = "tloen/alpaca-lora-7b"
-    tokenizer_name_or_path = "huggyllama/llama-7b"
 
-    peft_config = LoraConfig(
-        task_type=TaskType.SEQ_2_SEQ_LM, inference_mode=False, r=8, lora_alpha=32, lora_dropout=0.1
-    )
-
-    model = AutoModelForSeq2SeqLM.from_pretrained(低秩权重)
-    model = get_peft_model(model, peft_config)
-    model.print_trainable_parameters()
-    # output: trainable params: 2359296 || all params: 1231940608 || trainable%: 0.19151053100118282
-
+    # 低秩权重 = "tloen/alpaca-lora-7b"
     # model = PeftModel.from_pretrained(
     #     model,
     #     低秩权重,
     #     torch_dtype=torch.float16
     # )
-    # print("模型的参数：")
-    # model.print_trainable_parameters()
-    # for param in model.parameters():
-    #     if param.dtype.is_floating_point:
-    #         param.requires_grad = True
 
-    # print("模型的参数：")
+    config = LoraConfig(
+        r=lora_r,
+        lora_alpha=lora_alpha,
+        target_modules=lora_target_modules,
+        lora_dropout=lora_dropout,
+        bias="none",
+        task_type="CAUSAL_LM",
+    )
+    model = get_peft_model(model, config)
+    print("打印可训练数据")
     model.print_trainable_parameters()
-    # config = LoraConfig(
-    #     r=lora_r,
-    #     lora_alpha=lora_alpha,
-    #     target_modules=lora_target_modules,
-    #     lora_dropout=lora_dropout,
-    #     bias="none",
-    #     task_type="CAUSAL_LM",
-    # )
-    # model = get_peft_model(model, config)
 
     if data_path.endswith(".json") or data_path.endswith(".jsonl"):
         data = load_dataset("json", data_files=data_path)
@@ -296,8 +279,8 @@ def train(
 
     if torch.__version__ >= "2" and sys.platform != "win32":
         model = torch.compile(model)
-    print("检查点", resume_from_checkpoint)
-    trainer.train(resume_from_checkpoint=resume_from_checkpoint, fp16=False)
+
+    trainer.train(resume_from_checkpoint=resume_from_checkpoint)
 
     model.save_pretrained(output_dir)
 
