@@ -183,8 +183,9 @@ def train(
     print("模型的参数：")
     model.print_trainable_parameters()
     for param in model.parameters():
-        param.requires_grad = True
-        
+        if param.dtype.is_floating_point or param.dtype.is_complex:
+            param.requires_grad = True
+
     print("模型的参数：")
     model.print_trainable_parameters()
     # config = LoraConfig(
