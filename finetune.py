@@ -174,19 +174,30 @@ def train(
 
     model = prepare_model_for_int8_training(model)
     
-    低秩权重 = "huggyllama/llama-7b"
-    model = PeftModel.from_pretrained(
-        model,
-        低秩权重,
-        torch_dtype=torch.float16
-    )
-    print("模型的参数：")
-    model.print_trainable_parameters()
-    for param in model.parameters():
-        if param.dtype.is_floating_point:
-            param.requires_grad = True
+    低秩权重 = "tloen/alpaca-lora-7b"
+    tokenizer_name_or_path = "huggyllama/llama-7b"
 
-    print("模型的参数：")
+    peft_config = LoraConfig(
+        task_type=TaskType.SEQ_2_SEQ_LM, inference_mode=False, r=8, lora_alpha=32, lora_dropout=0.1
+    )
+
+    model = AutoModelForSeq2SeqLM.from_pretrained(低秩权重)
+    model = get_peft_model(model, peft_config)
+    model.print_trainable_parameters()
+    # output: trainable params: 2359296 || all params: 1231940608 || trainable%: 0.19151053100118282
+
+    # model = PeftModel.from_pretrained(
+    #     model,
+    #     低秩权重,
+    #     torch_dtype=torch.float16
+    # )
+    # print("模型的参数：")
+    # model.print_trainable_parameters()
+    # for param in model.parameters():
+    #     if param.dtype.is_floating_point:
+    #         param.requires_grad = True
+
+    # print("模型的参数：")
     model.print_trainable_parameters()
     # config = LoraConfig(
     #     r=lora_r,
