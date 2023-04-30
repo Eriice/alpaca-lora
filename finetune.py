@@ -180,7 +180,10 @@ def train(
         低秩权重,
         torch_dtype=torch.float16
     )
-
+    print("模型的参数：")
+    model.print_trainable_parameters()
+    for param in model.parameters():
+        param.requires_grad = True
     # config = LoraConfig(
     #     r=lora_r,
     #     lora_alpha=lora_alpha,
