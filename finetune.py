@@ -183,7 +183,7 @@ def train(
     print("模型的参数：")
     model.print_trainable_parameters()
     for param in model.parameters():
-        if param.dtype.is_floating_point or param.dtype.is_complex:
+        if param.dtype.is_floating_point:
             param.requires_grad = True
 
     print("模型的参数：")
