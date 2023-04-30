@@ -184,6 +184,9 @@ def train(
     model.print_trainable_parameters()
     for param in model.parameters():
         param.requires_grad = True
+        
+    print("模型的参数：")
+    model.print_trainable_parameters()
     # config = LoraConfig(
     #     r=lora_r,
     #     lora_alpha=lora_alpha,
