@@ -174,24 +174,22 @@ def train(
 
     model = prepare_model_for_int8_training(model)
 
-    # 低秩权重 = "tloen/alpaca-lora-7b"
-    # model = PeftModel.from_pretrained(
-    #     model,
-    #     低秩权重,
-    #     torch_dtype=torch.float16
-    # )
-
-    config = LoraConfig(
-        r=lora_r,
-        lora_alpha=lora_alpha,
-        target_modules=lora_target_modules,
-        lora_dropout=lora_dropout,
-        bias="none",
-        task_type="CAUSAL_LM",
+    低秩权重 = "yahma/llama-7b-hf"
+    model = PeftModel.from_pretrained(
+        model,
+        低秩权重,
+        torch_dtype=torch.float16
     )
-    model = get_peft_model(model, config)
-    print("打印可训练数据")
-    model.print_trainable_parameters()
+
+    # config = LoraConfig(
+    #     r=lora_r,
+    #     lora_alpha=lora_alpha,
+    #     target_modules=lora_target_modules,
+    #     lora_dropout=lora_dropout,
+    #     bias="none",
+    #     task_type="CAUSAL_LM",
+    # )
+    # model = get_peft_model(model, config)
 
     if data_path.endswith(".json") or data_path.endswith(".jsonl"):
         data = load_dataset("json", data_files=data_path)
