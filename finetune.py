@@ -173,8 +173,8 @@ def train(
         return tokenized_full_prompt
 
     model = prepare_model_for_int8_training(model)
-
-    低秩权重 = "tloen/alpaca-lora-7b"
+    
+    低秩权重 = "huggyllama/llama-7b"
     model = PeftModel.from_pretrained(
         model,
         低秩权重,
