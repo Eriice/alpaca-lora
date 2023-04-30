@@ -16,7 +16,7 @@ import bitsandbytes as bnb
 from peft import (
     LoraConfig,
     get_peft_model,
-    PertModel,
+    PeftModel,
     get_peft_model_state_dict,
     prepare_model_for_int8_training,
     set_peft_model_state_dict,
@@ -175,7 +175,7 @@ def train(
     model = prepare_model_for_int8_training(model)
 
     低秩权重 = "tloen/alpaca-lora-7b"
-    model = PertModel.from_pretrained(
+    model = PeftModel.from_pretrained(
         model,
         低秩权重,
         torch_dtype=torch.float16
